@@ -93,3 +93,4 @@ The Udacity airflow online build was used
 
 * [Apache Airflow Quickstart](https://airflow.apache.org/docs/apache-airflow/stable/start.html) 
 * [Examples of using the Amazon Redshift Python connector](https://docs.aws.amazon.com/redshift/latest/mgmt/python-connect-examples.html) 
+* [How to read a SQL file with python with proper character encoding?](https://stackoverflow.com/questions/47705183/how-to-read-a-sql-file-with-python-with-proper-character-encoding)
