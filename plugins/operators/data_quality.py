@@ -8,37 +8,33 @@ class DataQualityOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 redshift_conn_id='redshift',
-                 operations=[],
+                 redshift_conn_id='',
+                 tables=[]
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
-        self.operations = operations
+        self.tables = tables
 
     def execute(self, context):
         self.log.info('Running Data Quality Process')
-        redshift_hook = PostgresHook("redshift")
+        self.log.info('Connecting to Redshift...')
+        redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
-        num_quality_checks = len(self.operations)
+        num_quality_checks = len(self.tables)
         current_check = 1
         self.log.info(f"Starting data quality checks...")
 
-        for op in self.operations:
+        for table in self.tables:
+            records = redshift_hook.get_records(f"SELECT COUNT(*) FROM {table}")
 
-            self.log.info(f"Check {current_check}/{num_quality_checks}")
-
-            result = int(redshift_hook.get_first(sql=op['sql'])[0])
-
-            if op['check'] == 'greater':
-                if result <= op['value']:
-                    raise ValueError(f'Data Quality check failed {result} <= {op["value"]}')
-                
-            if op['check'] == 'equal':
-                if result != op['value']:
-                    raise ValueError(f'Data Quality check failed {result} != {op["value"]}')
+            if len(records) < 1 or len(records[0]) < 1:
+                raise ValueError(f"Data quality check failed. The {table} returned no results")          
+            num_records = records[0][0]
+            if num_records < 1:
+                raise ValueError(f"Data quality check failed. The {table} contained 0 rows")
                 
             self.log.info("Check Passed")
             current_check = current_check + 1
                 
-        self.log.info(f'All {num_quality_checks} passed.')
+        self.log.info(f'All {num_quality_checks} checks passed.')

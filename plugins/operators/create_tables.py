@@ -8,7 +8,7 @@ class CreateTablesOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 redshift_conn_id='redshift',
+                 redshift_conn_id='',
                  sql_file='',
                  *args, **kwargs):
 
@@ -19,7 +19,7 @@ class CreateTablesOperator(BaseOperator):
     def execute(self, context):
         # Creates tables if they do not exist
         self.log.info('Connecting to Redshift...')
-        redshift_hook = PostgresHook("redshift")
+        redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         self.log.info('Creating tables')
         with open(self.sql_file, 'r') as f:

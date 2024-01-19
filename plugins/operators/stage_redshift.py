@@ -11,8 +11,8 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_bucket='',
                  s3_prefix='',
                  table='',
-                 redshift_conn_id='redshift',
-                 aws_conn_id='aws_credentials',
+                 redshift_conn_id='',
+                 aws_credentials_id='',
                  copy_options='',
                  *args, **kwargs):
 
@@ -20,14 +20,15 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
         self.redshift_conn_id = redshift_conn_id
-        self.aws_conn_id = aws_conn_id
+        self.aws_credentials_id = aws_credentials_id
         self.table = table
         self.copy_options = copy_options
 
     def execute(self, context):
-        aws_hook = AwsHook("aws_credentials")
+        aws_hook = AwsHook(aws_conn_id=self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
-        redshift_hook = PostgresHook("redshift")
+        self.log.info('Connecting to Redshift...')
+        redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         self.log.info('Staging data to from s3 to Redshift Cluster')
 

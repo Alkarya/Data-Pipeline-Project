@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.artists (
-	 varchar(256) NOT NULL,
+	artistid varchar(256) NOT NULL,
 	name varchar(256),
 	location varchar(256),
 	lattitude numeric(18,0),

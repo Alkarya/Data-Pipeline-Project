@@ -9,7 +9,7 @@ class LoadFactOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  table='',
-                 redshift_conn_id='redshift',
+                 redshift_conn_id='',
                  sql = '',
                  *args, **kwargs):
 
@@ -20,8 +20,8 @@ class LoadFactOperator(BaseOperator):
 
     def execute(self, context):
         self.log.info(f'Running LoadFactOperator for {self.table}')
-
-        redshift_hook = PostgresHook("redshift")
+        self.log.info('Connecting to Redshift...')
+        redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         self.log.info(f'Inserting data in {self.table} table...')
         

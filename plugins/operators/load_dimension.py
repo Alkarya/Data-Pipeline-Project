@@ -9,7 +9,7 @@ class LoadDimensionOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  table='',
-                 redshift_conn_id='redshift',
+                 redshift_conn_id='',
                  sql = '',
                  load_mode = 'append',
                  *args, **kwargs):
@@ -22,8 +22,8 @@ class LoadDimensionOperator(BaseOperator):
 
     def execute(self, context):
         self.log.info(f'Running LoadDimensionOperator for {self.table}')
-
-        redshift_hook = PostgresHook("redshift")
+        self.log.info('Connecting to Redshift...')
+        redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         if self.load_mode == 'delete':
             self.log.info('Executing load in delete&load mode...')
