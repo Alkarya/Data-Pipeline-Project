@@ -104,7 +104,7 @@ run_quality_checks = DataQualityOperator(
     tables=['songplays', 'users', 'songs', 'artists', 'time']
 )
 
-end_operator = EmptyOperator(task_id='Stop_execution',  dag=dag)
+end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 
 ## DAG dependencies
